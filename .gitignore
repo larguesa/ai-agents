@@ -25,5 +25,8 @@ replay_pid*
 
 #general files
 api_key.txt
+requestBody.json
+responseBody.json
+searchResponseBody.json
 response.md
-stocks_history.json
+response.json

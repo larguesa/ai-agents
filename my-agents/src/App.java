@@ -10,15 +10,14 @@ import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class App {    // Nome do arquivo onde a chave API será armazenada
+public class App {
     private static final String API_KEY_FILE = "api_key.txt";
-
 
     public static void main(String[] args) {
         // Teste do método getApiKey
         String key = getApiKey();
         if (key != null) {
-            System.out.println("Chave API: " + key);
+            System.out.println("Chave APIresponse: " + key);
         } else {
             System.out.println("Falha ao obter a chave API.");
         }
@@ -50,37 +49,33 @@ public class App {    // Nome do arquivo onde a chave API será armazenada
         }
     }
     
-    public static String invokeGemini(String model, double temperature, String prompt, String responseMimeType, boolean enableGoogleSearch) {
+    public static String getGeminiCompletion(String model, double temperature, String prompt, String responseMimeType, boolean search) {
         try {
-            // Obtém a chave API
             String apiKey = getApiKey();
             if (apiKey == null) {
                 System.err.println("Falha ao obter a chave API.");
                 return null;
             }
 
-            // Configura a URL da API do Gemini
             String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + apiKey;
 
-            // Cria o corpo da requisição em JSON
             JSONObject requestBody = new JSONObject();
+            JSONArray contents = new JSONArray();
+            if (search) {
+                JSONObject searchContent = new JSONObject();
+                searchContent.put("role", "user");
+                searchContent.put("parts", new JSONObject().put("text", getGeminiSearchResults(prompt)));
+                contents.put(searchContent);
+            }
             JSONObject content = new JSONObject();
             content.put("role", "user");
             content.put("parts", new JSONObject().put("text", prompt));
-            requestBody.put("contents", new JSONObject[]{content});
+            contents.put(content);
+            requestBody.put("contents", contents);
             JSONObject generationConfig = new JSONObject().put("temperature", temperature);
             generationConfig.put("response_mime_type", responseMimeType);
             requestBody.put("generationConfig", generationConfig);
-            /*if (enableGoogleSearch) {
-                JSONObject toolConfig = new JSONObject();
-                toolConfig.put("googleSearch", new JSONObject()); // Habilita o Google Search
-                // A estrutura de `tools` é um array.
-                JSONArray toolsArray = new JSONArray();
-                toolsArray.put(toolConfig);
-                requestBody.put("tools", toolsArray);
-            }*/
 
-            // Configura a requisição HTTP
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -88,19 +83,95 @@ public class App {    // Nome do arquivo onde a chave API será armazenada
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                     .build();
 
-            // Envia a requisição e obtém a resposta
+            Files.writeString(Paths.get("requestBody.json"), requestBody.toString());
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             String responseBody = response.body();
-
-            // Extrai o texto da resposta
+            Files.writeString(Paths.get("responseBody.json"), responseBody.toString());
+            
             JSONObject responseJson = new JSONObject(responseBody);
-            //System.out.println(responseJson);
             return responseJson.getJSONArray("candidates")
                     .getJSONObject(0)
                     .getJSONObject("content")
                     .getJSONArray("parts")
                     .getJSONObject(0)
                     .getString("text");
+        } catch (Exception e) {
+            System.err.println("Erro ao invocar Gemini: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public static String getGeminiSearchResults(String prompt) {
+        try {
+            String apiKey = getApiKey();
+            if (apiKey == null) {
+                System.err.println("Falha ao obter a chave API.");
+                return null;
+            }
+
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key=" + apiKey;
+
+            JSONObject requestBody = new JSONObject();
+            JSONObject content = new JSONObject();
+            content.put("role", "user");
+            content.put("parts", new JSONObject().put("text", prompt));
+            requestBody.put("contents", new JSONObject[]{content});
+            JSONObject generationConfig = new JSONObject().put("response_mime_type", "text/plain");
+            requestBody.put("generationConfig", generationConfig);
+            JSONArray tools = new JSONArray();
+            tools.put(new JSONObject().put("googleSearch", new JSONObject()));
+            requestBody.put("tools", tools);
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String responseBody = response.body();
+            Files.writeString(Paths.get("searchResponseBody.json"), responseBody.toString());
+
+            JSONObject responseJson = new JSONObject(responseBody);
+            JSONObject candidate = responseJson
+                .getJSONArray("candidates")
+                .getJSONObject(0);
+            // texto principal
+            String text = candidate
+                .getJSONObject("content")
+                .getJSONArray("parts")
+                .getJSONObject(0)
+                .getString("text");
+
+            // extrai groundingChunks e monta lista de referências
+            StringBuilder sb = new StringBuilder(text);
+            if (candidate.has("groundingMetadata")) {
+                JSONObject groundingMetadata = candidate.getJSONObject("groundingMetadata");
+                if (groundingMetadata.has("groundingChunks")) {
+                    JSONArray chunks = groundingMetadata.getJSONArray("groundingChunks");
+                    sb.append("\n\n# Referências\n");
+                    for (int i = 0; i < chunks.length(); i++) {
+                        JSONObject web = chunks
+                            .getJSONObject(i)
+                            .getJSONObject("web");
+                        String title = web.optString("title", null);
+                        String uri   = web.getString("uri");
+                        if (title != null && !title.isEmpty()) {
+                            sb.append("- [")
+                            .append(title)
+                            .append("](")
+                            .append(uri)
+                            .append(")\n");
+                        } else {
+                            sb.append("- ")
+                            .append(uri)
+                            .append("\n");
+                        }
+                    }
+                }
+            }
+
+            return sb.toString();
         } catch (Exception e) {
             System.err.println("Erro ao invocar Gemini: " + e.getMessage());
             return null;

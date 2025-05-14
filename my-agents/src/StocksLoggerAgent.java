@@ -8,17 +8,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class StocksLoggerAgent {
-    // Constantes estáticas
-    public static final String MODEL = "gemini-2.0-flash";
-    public static final double TEMPERATURE = 0.7;
-    public static final long TIMER = 15000; // 15 segundos em milissegundos
+    public static final String MODEL = "gemini-2.5-flash-preview-04-17";
+    public static final double TEMPERATURE = 1.0;
+    public static final long TIMER = 10000; // 10 segundos em milissegundos
     public static final String[] STOCKS = {"AAPL", "MSFT", "GOOGL"};
 
-    // Nome do arquivo JSON para armazenar o histórico
-    private static final String HISTORY_FILE = "stocks_history.json";
+    private static final String HISTORY_FILE = "response.json";
     
     public static void main(String[] args) {
-        // Teste do agente
         StocksLoggerAgent agent = new StocksLoggerAgent();
         agent.startLogging();
 
@@ -58,14 +55,14 @@ public class StocksLoggerAgent {
             // Monta o prompt para solicitar preços das ações em JSON
             String stocksList = String.join(", ", STOCKS);
             String prompt = String.format(
-                "Provide the internet search realtime current stock prices in USD for %s in JSON format. " +
+                "Provide the current stock prices in USD for %s in JSON format. " +
                 "Return an object with ticker symbols as keys and prices as numbers. " +
                 "Example: {\"AAPL\": 100.00, \"MSFT\": 100.00, \"GOOGL\": 100.00}",
                 stocksList
             );
 
             // Chama a API do Gemini com response_mime_type como JSON
-            String response = App.invokeGemini(MODEL, TEMPERATURE, prompt, "application/json", true);
+            String response = App.getGeminiCompletion(MODEL, TEMPERATURE, prompt, "application/json", true);
             if (response == null) {
                 System.err.println("Falha ao obter preços das ações.");
                 return;
