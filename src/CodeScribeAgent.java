@@ -32,8 +32,8 @@ public class CodeScribeAgent {
             // 3. Percorrer collection gerando prompts e acumulando respostas
             StringBuilder accumulated = new StringBuilder();
             for (File file : files) {
-                System.out.println("Analisando " + file.getName() + "...");
                 try{
+                    System.out.println("Analisando " + file.getName() + "...");
                     String content = Files.readString(file.toPath());
                     String prompt = ""
                         + "Estrutura de Pastas e Arquivos:\n" + structure + "\n\n"
@@ -41,7 +41,6 @@ public class CodeScribeAgent {
                         + "Objetivo: forneça um resumo OBJETIVO e RESUMIDO do arquivo \"" + file.getName() + "\", "
                         + "focando nos pontos técnicos mais relevantes.\n\n"
                         + "Conteúdo do arquivo:\n" + content;
-
                     String response = App.getGeminiCompletion(
                         MODEL,
                         TEMPERATURE,
@@ -90,7 +89,7 @@ public class CodeScribeAgent {
         if (entries == null) return;
         String nextIndent = indent + "  ";
         for (File f : entries) {
-            if (f.isDirectory()) {
+            if (f.isDirectory() && !f.getName().equals(".git") && !f.getName().equals("bin")) {
                 buildStructure(f, nextIndent, sb, files);
             } else {
                 sb.append(nextIndent).append(f.getName()).append("\n");

@@ -8,7 +8,7 @@ public class DeepSearchAgent {
     // Configurações do modelo
     private static final String MODEL = "gemini-2.0-flash";
     private static final double TEMPERATURE = 0.7;
-    public static final String USER_PROMPT = "Quero uma pesquisa sobre engenharia de prompt otimizada para devs e profissionais de TI";
+    public static final String USER_PROMPT = "Quero uma pesquisa sobre engenharia de prompt otimizada para devs e profissionais de TI. E quero indicação de livros especializados especificamente sobre este assunto";
     private static final String RESPONSE_FILE = "response.md";
     private static final int PRODUNDIDADE = 3;
 
@@ -16,10 +16,10 @@ public class DeepSearchAgent {
         try {
             // 1. Gerar JSON com prompts diversificados
             System.out.println("Planejando a pesquisa...");
-            String generationInstruction = "Retorne um array com "+PRODUNDIDADE+" strings de prompts derivados do tema "+USER_PROMPT+
-                ". Cada prompt deve obter uma resposta diversificada do tema e as respostas serão consolidadas num relatório final"+
+            String generationInstruction = "Retorne um array com "+PRODUNDIDADE+" strings de prompts de pesquisa otimizados para o Gemini derivados do tema "+USER_PROMPT+
+                ". Cada prompt deve obter uma resposta diversificada do tema e as respostas serão acumuladas para geração de um relatório final pela própria IA"+
                 ", então as respostas devem conter conteúdo relevante ao tema original detalhado"+
-                ", incluindo no corpo do relatório os links de referências de livros recomendados, artigos, estudos e sites relevantes"+
+                ", incluindo no corpo do relatório os links de referências de livros recomendados em português, artigos, estudos e sites relevantes"+
                 ". Retorne **somente** um array JSON de %d strings. Exemplo de formato esperado:\n" +
                 "[\"prompt1\", \"prompt2\", …]";
             String promptsJson = App.getGeminiCompletion(MODEL, TEMPERATURE, generationInstruction, "application/json", false);
