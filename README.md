@@ -88,10 +88,10 @@ A arquitetura do projeto é relativamente simples, consistindo em uma classe pri
 
 ```mermaid
 graph LR
-    A[Agentes (ChainOfThoughtAgent, CodeScribeAgent, ...)] --> B(App.java)
+    A["Agentes (ChainOfThoughtAgent, CodeScribeAgent, ...)"] --> B(App.java)
     B --> C[API Gemini]
     C --> B
-    B --> D[Arquivos (response.md, response.json, ...)]
+    B --> D["Arquivos (response.md, response.json, ...)"]
 ```
 
 **Pontos Críticos:**
