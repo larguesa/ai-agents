@@ -75,7 +75,7 @@ public class StocksLoggerAgent {
      * Este modelo específico oferece a melhor precisão
      * para consultas de preços de ações em tempo real.
      */
-    public static final String MODEL = "gemini-2.5-flash-preview-04-17";
+    public static final String MODEL = "gemini-2.5-flash";
     
     /**
      * Nível de temperatura máximo para máxima diversidade de fontes.
@@ -363,7 +363,7 @@ public class StocksLoggerAgent {
             
             // Constrói prompt otimizado para obtenção de dados financeiros estruturados
             String prompt = String.format(
-                "Provide the current stock prices in USD for %s in JSON format. " +
+                "Data/hora atual: " + new java.util.Date() + ". Provide the current stock prices in USD for %s in JSON format. " +
                 "Return an object with ticker symbols as keys and prices as numbers. " +
                 "Example: {\"AAPL\": 100.00, \"MSFT\": 100.00, \"GOOGL\": 100.00}",
                 stocksList

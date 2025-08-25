@@ -193,7 +193,7 @@ public class DeepSearchAgent {
             
             // Constrói instrução para geração de prompts diversificados
             String generationInstruction = String.format(
-                "Retorne um array com %d strings de prompts de pesquisa otimizados para o Gemini derivados do tema %s. " +
+                "Data/hora atual: "+new java.util.Date()+". Retorne um array com %d strings de prompts de pesquisa otimizados para o Gemini derivados do tema %s. " +
                 "Cada prompt deve obter uma resposta diversificada do tema e as respostas serão acumuladas para geração de um relatório final pela própria IA, " +
                 "então as respostas devem conter conteúdo relevante ao tema original detalhado, " +
                 "incluindo no corpo do relatório os links de referências de livros recomendados em português, artigos, estudos e sites relevantes. " +
@@ -220,8 +220,8 @@ public class DeepSearchAgent {
             // Itera sobre cada prompt executando pesquisa individualizada
             for (int i = 0; i < promptsArray.length(); i++) {
                 String prompt = promptsArray.getString(i);
-                System.out.println((i + 1) + ". Pesquisando por '" + prompt + "'...");
-                
+                System.out.println((i + 1) + " Data/hora atual: " + new java.util.Date() + ". Pesquisando por '" + prompt + "'...");
+
                 // Executa pesquisa com busca web integrada
                 String resposta = App.getGeminiCompletion(
                     MODEL, 
@@ -243,7 +243,7 @@ public class DeepSearchAgent {
             
             // Constrói prompt de síntese combinando solicitação original + pesquisas
             String promptFinal = String.format(
-                "Escreva um relatório detalhado e objetivo da pesquisa abaixo:\n\n" +
+                "Data/hora atual: "+new java.util.Date()+". Escreva um relatório detalhado e objetivo da pesquisa abaixo:\n\n" +
                 "SOLICITAÇÃO INICIAL: %s\n\nPESQUISA: %s",
                 USER_PROMPT,
                 respostaAcumulada.toString()

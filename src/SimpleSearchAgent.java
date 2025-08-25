@@ -135,7 +135,7 @@ public class SimpleSearchAgent {
         try {
             // FASE 1: Execução de busca fundamentada
             // Chama método especializado que combina busca + geração de resposta
-            String response = App.getGeminiSearchResults(USER_PROMPT);
+            String response = App.getGeminiSearchResults("Data/hora atual: "+new java.util.Date()+". "+USER_PROMPT);
             
             // FASE 2: Formatação com cabeçalho temporal
             // Adiciona contexto temporal para identificação da consulta

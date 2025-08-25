@@ -198,7 +198,7 @@ public class CodeScribeAgent {
             // Itera sobre cada arquivo coletado realizando análise contextualizada
             for (File file : files) {
                 try {
-                    System.out.println("Analisando " + file.getName() + "...");
+                    System.out.print("Analisando " + file.getAbsolutePath() + "...");
                     
                     // Tenta ler conteúdo do arquivo como texto
                     String content = Files.readString(file.toPath());
@@ -212,7 +212,7 @@ public class CodeScribeAgent {
                         "Conteúdo do arquivo:\n%s",
                         structure,
                         accumulated.toString(),
-                        file.getName(),
+                        file.getAbsolutePath(),
                         content
                     );
                     
@@ -229,11 +229,13 @@ public class CodeScribeAgent {
                     accumulated
                         .append("## Resumo de ").append(file.getName()).append("\n")
                         .append(response).append("\n\n");
-                        
+                    System.out.print("processado.");
                 } catch (Exception e) {
                     // Ignora arquivos que não podem ser lidos como texto
                     // (binários, imagens, etc.) sem interromper o processo
+                    System.out.print("descartado por não ser arquivo de texto.");
                 }
+                System.out.println();
             }
             
             // FASE 4: SÍNTESE E GERAÇÃO DE RELATÓRIO TÉCNICO FINAL
@@ -340,7 +342,7 @@ public class CodeScribeAgent {
                 buildStructure(f, nextIndent, sb, files);
             } else {
                 // ARQUIVO: Adiciona à representação e coleta para análise
-                sb.append(nextIndent).append(f.getName()).append("\n");
+                sb.append(nextIndent).append(f.getAbsolutePath()).append("\n");
                 files.add(f);
             }
         }
