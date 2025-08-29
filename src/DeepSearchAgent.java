@@ -41,6 +41,9 @@ public class DeepSearchAgent {
                 "application/json", 
                 false  // Planejamento baseado em conhecimento, não busca
             );
+
+            // Salva apenas o relatório consolidado (não as pesquisas intermediárias)
+            Files.writeString(Paths.get("promptsJson"), promptsJson);
             
             // FASE 2: EXECUÇÃO DISTRIBUÍDA DAS PESQUISAS
             // Parseia array JSON de prompts gerados

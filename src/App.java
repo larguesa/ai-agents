@@ -164,7 +164,7 @@ public class App {
 
             // FASE 2: Configuração especializada para busca
             // Utiliza modelo específico com capacidades de busca integrada
-            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
 
             // FASE 3: Construção da requisição com ferramentas de busca
             JSONObject requestBody = new JSONObject();

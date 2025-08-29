@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class CodeScribeAgent {
+public class CodeReviewAgent {
 
     public static final String MODEL = "gemini-1.5-flash";
 
@@ -60,8 +60,8 @@ public class CodeScribeAgent {
                     String prompt = String.format(
                         "Estrutura de Pastas e Arquivos:\n%s\n\n" +
                         "Respostas Anteriores:\n%s\n\n" +
-                        "Objetivo: forneça um resumo OBJETIVO e RESUMIDO do arquivo \"%s\", " +
-                        "focando nos pontos técnicos mais relevantes.\n\n" +
+                        "Objetivo: atue como analista de sistemas revisor de código experiente e forneça um resumo OBJETIVO e RESUMIDO do arquivo \"%s\", " +
+                        "focando em falhas de segurança, vulnerabiidades, gargalos de performance e consumo excessivo de recursos computacionais.erros de arquitetura também\n\n" +
                         "Conteúdo do arquivo:\n%s",
                         structure,
                         accumulated.toString(),
@@ -98,8 +98,7 @@ public class CodeScribeAgent {
                 "Resumos por arquivo:\n%s\n\n" +
                 "Por favor, gere um RELATÓRIO TÉCNICO DETALHADO do projeto, " +
                 "incluindo a estrutura acima e os insights obtidos. " +
-                "O relatório deve ser bem organizado, claro e abordar arquitetura, " +
-                "pontos críticos e possíveis melhorias.",
+                "O relatório deve ser bem organizado, claro e com uma tabela de issues detalhada",
                 structure,
                 accumulated.toString()
             );
