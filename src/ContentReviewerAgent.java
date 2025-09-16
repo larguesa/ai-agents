@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class GrammarRevisorAgent {
+public class ContentReviewerAgent {
 
     public static final String MODEL = "gemini-2.5-pro";
     
     public static final double TEMPERATURE = 0.85;
+    
     
     private static final String RESPONSE_FILE = "response.md";
 
@@ -51,8 +52,9 @@ public class GrammarRevisorAgent {
                         "Data/hora atual: "+new java.util.Date()+".\n\n"+
                         "Estrutura de Pastas e Arquivos:\n%s\n\n" +
                         "Respostas Anteriores:\n%s\n\n" +
-                        "Objetivo: faça uma revisão ortográfica do arquivo \"%s\", " +
-                        "respondendo uma tabela com o título do nome do arquivo e colunas para linha, trecho de texto com erro, trecho do texo corrigido.\n\n" +
+                        "Objetivo: faça uma revisão do conteúdo do arquivo \"%s\", " +
+                        "procurando por redundâncias, inconsistências, despadronizações, erros conceituais ou outros pontos de melhoria, " +
+                        "respondendo uma tabela com o título do nome do arquivo e colunas para trecho de texto com erro e sugestão de melhoria.\n\n" +
                         "Conteúdo do arquivo:\n%s",
                         structure,
                         accumulated.toString(),
@@ -84,7 +86,7 @@ public class GrammarRevisorAgent {
             
             // FASE 4: RELATÓRIO FINAL
             // Adiciona cabeçalho com identificação temporal
-            String header = "# Relatório GrammarRevisorAgent em " + new Date() + "\n\n";
+            String header = "# Relatório ContentRevisorAgent em " + new Date() + "\n\n";
             
             // Persiste apenas o relatório final (não as análises intermediárias)
             Files.writeString(Paths.get(RESPONSE_FILE), header + accumulated.toString());
